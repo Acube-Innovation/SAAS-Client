@@ -20,6 +20,8 @@ export const keys = {
   followUps: ["portal", "follow-ups"] as const,
   content: ["portal", "content"] as const,
   changeRequests: ["portal", "change-requests"] as const,
+  log: ["portal", "communication-log"] as const,
+  reports: ["portal", "reports"] as const,
 };
 
 /** Role, agency status and industry labels for the shell. */
@@ -194,5 +196,39 @@ export function useChangeRequest(id: string) {
   return useQuery({
     queryKey: [...keys.changeRequests, id],
     queryFn: () => unwrap(api.GET("/api/portal/change-requests/{id}", { params: { path: { id } } })),
+  });
+}
+
+/** Communication log (spec 2.8): every message and call with its replies. */
+export function useCommunicationLog(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.log, query],
+    queryFn: () => unwrap(api.GET("/api/portal/communication-log", { params: { query } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+/** Reports (spec 2.5). */
+export function useReminderResults(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.reports, "reminder-results", query],
+    queryFn: () => unwrap(api.GET("/api/portal/reports/reminder-results", { params: { query } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useFollowUpAgeing(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.reports, "follow-up-ageing", query],
+    queryFn: () => unwrap(api.GET("/api/portal/reports/follow-up-ageing", { params: { query } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useSubscriberHealth(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.reports, "subscriber-health", query],
+    queryFn: () => unwrap(api.GET("/api/portal/reports/subscriber-health", { params: { query } })),
+    placeholderData: keepPreviousData,
   });
 }

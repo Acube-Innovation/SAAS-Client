@@ -79,7 +79,7 @@ export function ImportWizard({ entity, onDone }: { entity: Entity; onDone?: () =
   const working = status === "uploaded" || status === "previewing" || status === "confirming";
   useEffect(() => {
     // Once, when the import finishes: lists, Home numbers and the checklist change.
-    if (status === "done") void refresh(keys.subscribers, keys.imports).then(() => onDone?.());
+    if (status === "done") void refresh(keys.subscribers, keys.bookings, keys.imports).then(() => onDone?.());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 

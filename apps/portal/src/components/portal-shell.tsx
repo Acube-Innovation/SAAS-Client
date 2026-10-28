@@ -77,7 +77,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   const several = user.memberships.filter((m) => m.status === "active").length > 1;
   return (
     <div className="min-h-screen bg-slate-50">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 lg:block print:hidden">
         <Sidebar role={role} />
       </aside>
       {menuOpen && (
@@ -89,8 +89,8 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 sm:px-6">
+      <div className="lg:pl-64 print:pl-0">
+        <header className="sticky top-0 z-30 flex h-16 print:hidden items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 sm:px-6">
           <button
             type="button"
             className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
@@ -118,7 +118,9 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
             </Button>
           </div>
         </header>
-        <Banners config={config.data} />
+        <div className="print:hidden">
+          <Banners config={config.data} />
+        </div>
         <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
           {canOpen(role, pathname) ? (
             children

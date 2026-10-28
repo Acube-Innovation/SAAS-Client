@@ -103,3 +103,30 @@ export const reminderSchema = z
       ctx.addIssue({ code: "custom", path: ["holiday_dates"], message: "validation.holiday_past" });
     }
   });
+
+export const OUTCOMES = [
+  "confirmed", "reschedule", "not_available", "needs_review", "no_response", "failed", "opted_out", "skipped",
+] as const;
+
+/** Booking (spec 2.3): booking date not in the future, delivery date (optional) not in the past. */
+export const bookingSchema = z
+  .object({
+    booking_reference: z.string().trim().min(1, "validation.required").max(50, "validation.max_50"),
+    subscriber: z.string().min(1, "validation.choose_subscriber"),
+    booking_date: z.string().min(1, "validation.required"),
+    scheduled_date: z.string(),
+    cylinder_type: z.string().min(1, "validation.required"),
+    quantity: z.number({ message: "validation.number" }).int("validation.quantity").min(1, "validation.quantity").max(99, "validation.quantity"),
+    remarks: z.string().max(500, "validation.max_500"),
+  })
+  .superRefine((value, ctx) => {
+    if (value.booking_date && value.booking_date > todayIso())
+      ctx.addIssue({ code: "custom", path: ["booking_date"], message: "validation.not_future" });
+  });
+
+/** A new delivery date: today or later. */
+export const newDateSchema = z.object({
+  scheduled_date: z.string().min(1, "validation.required").refine((d) => d >= todayIso(), "validation.not_past"),
+});
+
+export { todayIso };

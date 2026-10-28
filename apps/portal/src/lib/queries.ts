@@ -15,6 +15,9 @@ export const keys = {
   users: ["portal", "users"] as const,
   reminderSettings: ["portal", "reminder-settings"] as const,
   imports: ["portal", "imports"] as const,
+  bookings: ["portal", "bookings"] as const,
+  deliveries: ["portal", "deliveries"] as const,
+  followUps: ["portal", "follow-ups"] as const,
 };
 
 /** Role, agency status and industry labels for the shell. */
@@ -109,4 +112,45 @@ export function useRefresh() {
   const queryClient = useQueryClient();
   return (...groups: readonly (readonly string[])[]) =>
     Promise.all([...groups, keys.home].map((queryKey) => queryClient.invalidateQueries({ queryKey })));
+}
+
+export function useBookings(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.bookings, query],
+    queryFn: () => unwrap(api.GET("/api/portal/bookings", { params: { query } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useBooking(id: string) {
+  return useQuery({
+    queryKey: [...keys.bookings, id],
+    queryFn: () => unwrap(api.GET("/api/portal/bookings/{id}", { params: { path: { id } } })),
+  });
+}
+
+export function useTimeline(id: string | null) {
+  return useQuery({
+    queryKey: [...keys.bookings, id, "timeline"],
+    enabled: Boolean(id),
+    queryFn: () => unwrap(api.GET("/api/portal/bookings/{id}/timeline", { params: { path: { id: id! } } })),
+  });
+}
+
+export function useDeliveries(date: string) {
+  return useQuery({
+    queryKey: [...keys.deliveries, date],
+    queryFn: () =>
+      unwrap(api.GET("/api/portal/deliveries", { params: { query: date ? { date } : {} } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useFollowUps(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.followUps, query],
+    queryFn: () => unwrap(api.GET("/api/portal/follow-ups", { params: { query } })),
+    placeholderData: keepPreviousData,
+    refetchInterval: 60_000,
+  });
 }

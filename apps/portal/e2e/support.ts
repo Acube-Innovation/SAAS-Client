@@ -3,6 +3,8 @@ import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { request } from "@playwright/test";
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const AUTH_DIR = path.join(HERE, ".auth");
 export const PASSWORD = "e2e-portal-passphrase-2026";
@@ -31,6 +33,29 @@ export function totp(hexKey: string, offset = 0): string {
 export const unique = () => `${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
 
 export const authFile = (role: Role) => path.join(AUTH_DIR, `${role}.json`);
+
+export const STAFF_ROLES = ["super_admin", "support"] as const;
+export type StaffRole = (typeof STAFF_ROLES)[number];
+export const staffAuthFile = (role: StaffRole) => path.join(AUTH_DIR, `staff-${role}.json`);
+
+/** A signed-in API session (portal role or platform staff) with JSON helpers that send the CSRF token. */
+export async function apiAs(baseURL: string, storageState: string) {
+  const context = await request.newContext({ baseURL, storageState });
+  const headers = async () => ({
+    "X-CSRFToken": (await context.storageState()).cookies.find((c) => c.name === "csrftoken")?.value ?? "",
+  });
+  const call = async (method: "get" | "post" | "patch", url: string, data?: unknown) => {
+    const response = await context[method](url, { data, headers: await headers() });
+    if (!response.ok()) throw new Error(`${method.toUpperCase()} ${url} -> ${response.status()} ${await response.text()}`);
+    return response.json();
+  };
+  return {
+    context,
+    get: (url: string) => call("get", url),
+    post: (url: string, data?: unknown) => call("post", url, data),
+    patch: (url: string, data?: unknown) => call("patch", url, data),
+  };
+}
 
 /** RFC 6238 TOTP for a base32 secret (the set-up key shown on the two-factor page). */
 export function totpBase32(secret: string): string {

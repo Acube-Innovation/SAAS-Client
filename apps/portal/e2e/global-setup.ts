@@ -2,7 +2,7 @@ import fs from "node:fs";
 
 import { type FullConfig, request } from "@playwright/test";
 
-import { AUTH_DIR, authFile, manage, PASSWORD, ROLES, totp, unique } from "./support";
+import { AUTH_DIR, authFile, manage, PASSWORD, ROLES, STAFF_ROLES, staffAuthFile, totp, unique } from "./support";
 
 const SEED_EMAIL = { owner: "owner", manager: "manager", office_staff: "staff" } as const;
 
@@ -38,4 +38,22 @@ export default async function globalSetup(config: FullConfig) {
     await api.dispose();
   }
   fs.writeFileSync(`${AUTH_DIR}/agency.txt`, name);
+
+  // Platform staff for the admin side of Workflow 3.3 (driven through the API here).
+  for (const role of STAFF_ROLES) {
+    const email = `e2e-portal-${role.replace("_", "-")}-${unique()}@e2e.test`;
+    manage(`createplatformuser --email ${email} --full-name "E2E ${role}" --role ${role} --password-stdin`, `${PASSWORD}\n`);
+    const api = await request.newContext({ baseURL });
+    await api.get("/api/auth/csrf");
+    const csrf = async () => ({
+      "X-CSRFToken": (await api.storageState()).cookies.find((c) => c.name === "csrftoken")?.value ?? "",
+    });
+    const login = await api.post("/api/auth/login", { data: { email, password: PASSWORD }, headers: await csrf() });
+    if (!login.ok()) throw new Error(`login ${email}: ${login.status()} ${await login.text()}`);
+    const setup = await (await api.post("/api/auth/otp/setup", { headers: await csrf() })).json();
+    const confirm = await api.post("/api/auth/otp/confirm", { data: { otp_code: totp(setup.secret) }, headers: await csrf() });
+    if (!confirm.ok()) throw new Error(`2FA ${email}: ${confirm.status()} ${await confirm.text()}`);
+    await api.storageState({ path: staffAuthFile(role) });
+    await api.dispose();
+  }
 }

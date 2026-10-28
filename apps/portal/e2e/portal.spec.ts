@@ -57,8 +57,8 @@ test.describe("Home shows the seeded numbers", () => {
     await expect(tile("Follow-up queue")).toContainText(`${n(data.follow_up.open)} open`);
     await expect(tile("No planned delivery date yet").locator("p").nth(1)).toHaveText(n(data.no_date));
     await expect(page.getByText(`${data.tomorrow_counts.total} cylinder delivery bookings`)).toBeVisible();
-    // The seeded agency has no live WhatsApp template yet.
-    await expect(page.getByRole("status").filter({ hasText: "No WhatsApp template is live yet" })).toBeVisible();
+    // The seeded agency's reminder template is live, so there is no template alert.
+    await expect(page.getByRole("status").filter({ hasText: "No WhatsApp template is live yet" })).toHaveCount(0);
     // Managers don't get the owner's checklist.
     await expect(page.getByRole("region", { name: "Get started" })).toHaveCount(0);
   });

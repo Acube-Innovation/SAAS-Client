@@ -130,3 +130,22 @@ export const newDateSchema = z.object({
 });
 
 export { todayIso };
+
+// --- Messages and voice (spec 2.6, admin spec 2.9) --------------------------------------------
+
+export const REQUEST_TYPES = ["new_template", "edit_template", "new_language", "voice_script", "other"] as const;
+
+export const changeRequestSchema = z.object({
+  request_type: z.enum(REQUEST_TYPES, { message: "validation.required" }),
+  subject: z.string().trim().min(5, "validation.subject").max(150, "validation.subject"),
+  description: z.string().trim().max(2000, "validation.max_2000"),
+});
+export type ChangeRequestValues = z.infer<typeof changeRequestSchema>;
+
+export const sendBackSchema = z.object({
+  comment: z.string().trim().min(5, "validation.send_back").max(1000, "validation.send_back"),
+});
+
+export const commentSchema = z.object({
+  body: z.string().trim().min(1, "validation.required").max(2000, "validation.max_2000"),
+});

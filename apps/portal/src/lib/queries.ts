@@ -18,6 +18,8 @@ export const keys = {
   bookings: ["portal", "bookings"] as const,
   deliveries: ["portal", "deliveries"] as const,
   followUps: ["portal", "follow-ups"] as const,
+  content: ["portal", "content"] as const,
+  changeRequests: ["portal", "change-requests"] as const,
 };
 
 /** Role, agency status and industry labels for the shell. */
@@ -152,5 +154,45 @@ export function useFollowUps(query: Record<string, string>) {
     queryFn: () => unwrap(api.GET("/api/portal/follow-ups", { params: { query } })),
     placeholderData: keepPreviousData,
     refetchInterval: 60_000,
+  });
+}
+
+/** Messages and voice (spec 2.6): view-only content. */
+export function useContentTemplates() {
+  return useQuery({
+    queryKey: [...keys.content, "templates"],
+    queryFn: () => unwrap(api.GET("/api/portal/content/templates")),
+  });
+}
+
+export function useVoiceScripts(enabled = true) {
+  return useQuery({
+    queryKey: [...keys.content, "voice-scripts"],
+    queryFn: () => unwrap(api.GET("/api/portal/content/voice-scripts")),
+    enabled,
+  });
+}
+
+export function useQuestionFlows(enabled = true) {
+  return useQuery({
+    queryKey: [...keys.content, "question-flows"],
+    queryFn: () => unwrap(api.GET("/api/portal/content/question-flows")),
+    enabled,
+  });
+}
+
+export function useChangeRequests(query: Record<string, string>, enabled = true) {
+  return useQuery({
+    queryKey: [...keys.changeRequests, query],
+    queryFn: () => unwrap(api.GET("/api/portal/change-requests", { params: { query } })),
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+}
+
+export function useChangeRequest(id: string) {
+  return useQuery({
+    queryKey: [...keys.changeRequests, id],
+    queryFn: () => unwrap(api.GET("/api/portal/change-requests/{id}", { params: { path: { id } } })),
   });
 }

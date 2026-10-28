@@ -21,3 +21,6 @@ test-results/
 .DS_Store
 .idea/
 .vscode/
+
+# Playwright sessions
+**/e2e/.auth/

@@ -17,15 +17,7 @@ const COUNTS = [
   { key: "needs_review", tone: "text-red-700" },
 ] as const;
 
-const CHECKLIST_LINKS: Record<string, string> = {
-  agency_details: "/users",
-  areas: "/areas",
-  reminder_settings: "/reminder-settings",
-  import_subscribers: "/subscribers",
-  import_bookings: "/bookings",
-  invite_team: "/users",
-  auto_top_up: "/wallet",
-};
+const setupLink = (key: string) => `/setup?step=${key}`;
 
 /** Labels from the industry template, e.g. "Cylinder delivery" and "Planned delivery date". */
 function industryLabels(config: PortalConfig) {
@@ -72,8 +64,13 @@ function Checklist({ checklist }: { checklist: NonNullable<Home["checklist"]> })
           <h2 className="text-base font-semibold text-ink">{t("checklist.title")}</h2>
           <p className="text-sm text-muted">{t("checklist.intro")}</p>
         </div>
-        <span className="text-sm font-medium text-brand-700">
-          {t("checklist.progress", { done, total: checklist.items.length })}
+        <span className="flex items-center gap-3">
+          <span className="text-sm font-medium text-brand-700">
+            {t("checklist.progress", { done, total: checklist.items.length })}
+          </span>
+          <Link href="/setup">
+            <Button>{t("checklist.start")}</Button>
+          </Link>
         </span>
       </div>
       {action.isError && (
@@ -102,7 +99,7 @@ function Checklist({ checklist }: { checklist: NonNullable<Home["checklist"]> })
               {item.done && <StatusPill tone="ok">{t("checklist.done")}</StatusPill>}
               {item.skipped && <StatusPill tone="neutral">{t("checklist.skipped")}</StatusPill>}
               {!item.done && !item.skipped && (
-                <Link href={CHECKLIST_LINKS[item.key] ?? "/home"} className="text-sm font-medium text-brand-700 hover:underline">
+                <Link href={setupLink(item.key)} className="text-sm font-medium text-brand-700 hover:underline">
                   {t("checklist.open")}
                 </Link>
               )}

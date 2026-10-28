@@ -78,7 +78,10 @@ export function portalConfig(overrides: Record<string, unknown> = {}) {
     role: "manager",
     default_language: "ml",
     template: "gas_agency",
-    subscriber_fields: [{ key: "external_ref", label: "Consumer number" }],
+    subscriber_fields: [
+      { key: "customer_name", label: "Customer name", field_type: "text", required: true, is_core: true },
+      { key: "external_ref", label: "Consumer number", field_type: "text", required: true, is_core: true },
+    ],
     schedule_types: [
       { key: "cylinder_delivery", name: "Cylinder delivery", fields: [{ key: "scheduled_date", label: "Planned delivery date" }] },
     ],

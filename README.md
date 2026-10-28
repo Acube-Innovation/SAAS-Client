@@ -36,8 +36,9 @@ http://localhost:3001/login. Owners set up two-factor authentication on first si
 here; they open an agency from the super admin console (Open as support).
 
 What's built so far: sign-in with 2FA, invitation acceptance, agency choice for users in several agencies, the menu
-for each role (spec 1.1), the suspended-agency and support banners, and Home (spec 2.1) with the first-login
-checklist (Workflow 3.6). Other screens show a placeholder until their step.
+for each role (spec 1.1), the suspended-agency and support banners, Home (spec 2.1), the guided first-login set-up
+(`/setup`, Workflow 3.6), Subscribers with CSV import (preview, per-row errors, error file), Areas and staff, Users and
+Reminder settings. Other screens show a placeholder until their step.
 
 ## Checks
 

@@ -9,6 +9,8 @@ export type Section = {
   href: string;
   key: string;
   roles: readonly PortalRole[];
+  /** Reachable but not in the menu (the guided set-up opens from Home). */
+  hidden?: boolean;
 };
 
 const ALL: readonly PortalRole[] = ["owner", "manager", "office_staff", "support"];
@@ -28,11 +30,12 @@ export const SECTIONS: readonly Section[] = [
   { href: "/reminder-settings", key: "reminder_settings", roles: ["owner", "manager", "support"] },
   { href: "/integrations", key: "integrations", roles: ["owner"] },
   { href: "/audit-log", key: "audit_log", roles: ["owner", "support"] },
+  { href: "/setup", key: "setup", roles: ["owner"], hidden: true },
 ];
 
 export function menuFor(role: PortalRole | "" | undefined): Section[] {
   if (!role) return [];
-  return SECTIONS.filter((section) => section.roles.includes(role));
+  return SECTIONS.filter((section) => !section.hidden && section.roles.includes(role));
 }
 
 export function sectionFor(pathname: string): Section | undefined {

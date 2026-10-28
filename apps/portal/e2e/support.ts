@@ -31,3 +31,14 @@ export function totp(hexKey: string, offset = 0): string {
 export const unique = () => `${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
 
 export const authFile = (role: Role) => path.join(AUTH_DIR, `${role}.json`);
+
+/** RFC 6238 TOTP for a base32 secret (the set-up key shown on the two-factor page). */
+export function totpBase32(secret: string): string {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let bits = "";
+  for (const char of secret.replace(/[\s=]/g, "").toUpperCase()) {
+    bits += alphabet.indexOf(char).toString(2).padStart(5, "0");
+  }
+  const bytes = Buffer.from(bits.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
+  return totp(bytes.toString("hex"));
+}

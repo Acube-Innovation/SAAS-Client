@@ -38,3 +38,6 @@ export type Mandate = Schemas["Mandate"];
 export type AutoTopUp = Schemas["AutoTopUp"];
 export type PlanView = Schemas["PlanView"];
 export type PlanInfo = Schemas["Plan"];
+export type ApiKey = Schemas["ApiKey"];
+export type WebhookEndpoint = Schemas["Endpoint"];
+export type WebhookDelivery = Schemas["Delivery"];

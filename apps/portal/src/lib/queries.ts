@@ -23,6 +23,7 @@ export const keys = {
   log: ["portal", "communication-log"] as const,
   reports: ["portal", "reports"] as const,
   billing: ["portal", "billing"] as const,
+  integrations: ["portal", "integrations"] as const,
 };
 
 /** Role, agency status and industry labels for the shell. */
@@ -261,4 +262,26 @@ export function useAutoTopUp() {
 
 export function usePlan() {
   return useQuery({ queryKey: [...keys.billing, "plan"], queryFn: () => unwrap(api.GET("/api/portal/plan")) });
+}
+
+/** Integrations (spec 2.10). */
+export function useApiKeys() {
+  return useQuery({ queryKey: [...keys.integrations, "keys"], queryFn: () => unwrap(api.GET("/api/portal/integrations/api-keys")) });
+}
+
+export function useWebhookEndpoints() {
+  return useQuery({ queryKey: [...keys.integrations, "webhooks"], queryFn: () => unwrap(api.GET("/api/portal/integrations/webhooks")) });
+}
+
+export function useEventTypes() {
+  return useQuery({ queryKey: [...keys.integrations, "event-types"], queryFn: () => unwrap(api.GET("/api/portal/integrations/event-types")), staleTime: Infinity });
+}
+
+export function useWebhookDeliveries(query: Record<string, string>) {
+  return useQuery({
+    queryKey: [...keys.integrations, "deliveries", query],
+    queryFn: () => unwrap(api.GET("/api/portal/integrations/deliveries", { params: { query } })),
+    placeholderData: keepPreviousData,
+    refetchInterval: 10_000,
+  });
 }

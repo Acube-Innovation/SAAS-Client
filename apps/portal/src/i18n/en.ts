@@ -129,6 +129,8 @@ export const en: Messages = {
   "home.alert.template_paused": "Sending stopped: Meta paused your WhatsApp template. Our team has been notified.",
   "home.alert.no_live_template": "No WhatsApp template is live yet, so reminders can't be sent. Check Messages and voice for drafts to approve.",
   "home.alert.send_cap_reached": "Today's sending limit is reached. Remaining reminders go out tomorrow.",
+  "home.alert.wallet_low": "Wallet balance is low. Top up so reminders don't stop.",
+  "home.alert.wallet_empty": "Sending paused: the wallet balance has run out. Reminders are held until you top up.",
   "home.wallet_soon": "Wallet balance appears here once billing is set up.",
 
   "age.minutes": "{count} min",

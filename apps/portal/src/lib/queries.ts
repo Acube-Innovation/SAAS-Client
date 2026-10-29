@@ -22,6 +22,7 @@ export const keys = {
   changeRequests: ["portal", "change-requests"] as const,
   log: ["portal", "communication-log"] as const,
   reports: ["portal", "reports"] as const,
+  billing: ["portal", "billing"] as const,
 };
 
 /** Role, agency status and industry labels for the shell. */
@@ -231,4 +232,33 @@ export function useSubscriberHealth(query: Record<string, string>) {
     queryFn: () => unwrap(api.GET("/api/portal/reports/subscriber-health", { params: { query } })),
     placeholderData: keepPreviousData,
   });
+}
+
+/** Wallet and billing (spec 2.9). */
+export function useWallet() {
+  return useQuery({ queryKey: [...keys.billing, "wallet"], queryFn: () => unwrap(api.GET("/api/portal/wallet")) });
+}
+
+export function useWalletTransactions(page: number) {
+  return useQuery({
+    queryKey: [...keys.billing, "transactions", page],
+    queryFn: () => unwrap(api.GET("/api/portal/wallet/transactions", { params: { query: { page } } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useInvoices(page: number) {
+  return useQuery({
+    queryKey: [...keys.billing, "invoices", page],
+    queryFn: () => unwrap(api.GET("/api/portal/invoices", { params: { query: { page } } })),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useAutoTopUp() {
+  return useQuery({ queryKey: [...keys.billing, "auto-top-up"], queryFn: () => unwrap(api.GET("/api/portal/auto-top-up")) });
+}
+
+export function usePlan() {
+  return useQuery({ queryKey: [...keys.billing, "plan"], queryFn: () => unwrap(api.GET("/api/portal/plan")) });
 }
